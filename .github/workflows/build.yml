@@ -1,4 +1,5 @@
-name: AIR-MOUSE-WATCH Cloud Mac
+
+name: AIR-MOUSE-WATCH Cloud Build
 
 on:
   workflow_dispatch:
@@ -7,23 +8,24 @@ on:
       - main
 
 jobs:
-  check-mac:
+  build-watch-app:
     runs-on: macos-latest
 
     steps:
       - name: Get project files
         uses: actions/checkout@v4
 
-      - name: Check Xcode and watchOS
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build Apple Watch app
         run: |
-          echo "=== XCODE VERSION ==="
-          xcodebuild -version
-
-          echo "=== AVAILABLE SDKs ==="
-          xcodebuild -showsdks
-
-          echo "=== AVAILABLE SIMULATOR RUNTIMES ==="
-          xcrun simctl list runtimes
-
-          echo "=== WATCHOS DEVICES ==="
-          xcrun simctl list devices available | grep -i watch || true
+          xcodebuild \
+            -project WatchMouse.xcodeproj \
+            -scheme WatchMouse \
+            -destination 'generic/platform=watchOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            build
