@@ -29,3 +29,12 @@ jobs:
             -destination 'generic/platform=watchOS Simulator' \
             CODE_SIGNING_ALLOWED=NO \
             build
+
+      - name: Build iPhone companion app
+        run: |
+          xcodebuild \
+            -project WatchMouse.xcodeproj \
+            -scheme WatchMouseiPhone \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            build
