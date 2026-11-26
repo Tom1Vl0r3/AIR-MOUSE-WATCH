@@ -1,0 +1,21 @@
+name: AIR-MOUSE-WATCH Cloud Mac
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  check-mac:
+    runs-on: macos-latest
+
+    steps:
+      - name: Get project files
+        uses: actions/checkout@v4
+
+      - name: Check cloud Mac
+        run: |
+          echo "Our cloud Mac is working!"
+          xcodebuild -version
+          xcrun simctl list devices available | head -20
