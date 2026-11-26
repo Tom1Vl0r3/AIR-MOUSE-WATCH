@@ -14,8 +14,16 @@ jobs:
       - name: Get project files
         uses: actions/checkout@v4
 
-      - name: Check cloud Mac
+      - name: Check Xcode and watchOS
         run: |
-          echo "Our cloud Mac is working!"
+          echo "=== XCODE VERSION ==="
           xcodebuild -version
-          xcrun simctl list devices available | head -20
+
+          echo "=== AVAILABLE SDKs ==="
+          xcodebuild -showsdks
+
+          echo "=== AVAILABLE SIMULATOR RUNTIMES ==="
+          xcrun simctl list runtimes
+
+          echo "=== WATCHOS DEVICES ==="
+          xcrun simctl list devices available | grep -i watch || true
