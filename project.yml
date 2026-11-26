@@ -1,0 +1,17 @@
+name: WatchMouse
+
+options:
+  deploymentTarget:
+    watchOS: "10.0"
+
+targets:
+  WatchMouse:
+    type: application
+    platform: watchOS
+    sources:
+      - path: WatchMouse
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tommy.airmouse.watchmouse
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
