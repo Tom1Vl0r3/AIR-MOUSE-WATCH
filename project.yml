@@ -15,11 +15,6 @@ targets:
     dependencies:
       - target: WatchMouse
         embed: true
-    info:
-      properties:
-        NSAppTransportSecurity:
-          NSAllowsArbitraryLoads: true
-        NSLocalNetworkUsageDescription: "WatchMouse connects to your Windows computer to control the mouse."
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tommy.airmouse.iphone
