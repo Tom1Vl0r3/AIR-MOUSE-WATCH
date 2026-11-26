@@ -27,6 +27,7 @@ jobs:
             -project WatchMouse.xcodeproj \
             -scheme WatchMouse \
             -destination 'generic/platform=watchOS Simulator' \
+            -derivedDataPath "$GITHUB_WORKSPACE/build/DerivedData" \
             CODE_SIGNING_ALLOWED=NO \
             build
 
@@ -36,5 +37,15 @@ jobs:
             -project WatchMouse.xcodeproj \
             -scheme WatchMouseiPhone \
             -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$GITHUB_WORKSPACE/build/DerivedData" \
             CODE_SIGNING_ALLOWED=NO \
             build
+
+      - name: Upload compiled apps
+        uses: actions/upload-artifact@v4
+        with:
+          name: AIR-MOUSE-WATCH-Simulator-Builds
+          path: |
+            build/DerivedData/Build/Products/Debug-iphonesimulator/WatchMouseiPhone.app
+            build/DerivedData/Build/Products/Debug-watchsimulator/WatchMouse.app
+          if-no-files-found: error
