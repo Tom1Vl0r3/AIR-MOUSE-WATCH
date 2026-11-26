@@ -26,11 +26,9 @@ targets:
     platform: watchOS
     sources:
       - path: WatchMouse
-    info:
-      properties:
-        WKCompanionAppBundleIdentifier: com.tommy.airmouse.iphone
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tommy.airmouse.iphone.watchkitapp
+        INFOPLIST_KEY_WKCompanionAppBundleIdentifier: com.tommy.airmouse.iphone
         SWIFT_VERSION: "5.0"
         GENERATE_INFOPLIST_FILE: YES
