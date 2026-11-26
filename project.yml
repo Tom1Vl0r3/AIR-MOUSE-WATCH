@@ -3,6 +3,7 @@ name: WatchMouse
 options:
   deploymentTarget:
     watchOS: "10.0"
+    iOS: "17.0"
 
 targets:
   WatchMouse:
@@ -13,5 +14,16 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tommy.airmouse.watchmouse
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+
+  WatchMouseiPhone:
+    type: application
+    platform: iOS
+    sources:
+      - path: iPhoneApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tommy.airmouse.iphone
         SWIFT_VERSION: "5.0"
         GENERATE_INFOPLIST_FILE: YES
