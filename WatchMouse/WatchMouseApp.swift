@@ -1,5 +1,41 @@
+
 import SwiftUI
 import CoreMotion
+import WatchConnectivity
+
+final class WatchConnectivityManager: NSObject, WCSessionDelegate {
+    static let shared = WatchConnectivityManager()
+
+    private override init() {
+        super.init()
+
+        if WCSession.isSupported() {
+            WCSession.default.delegate = self
+            WCSession.default.activate()
+        }
+    }
+
+    func sendMotion(roll: Double, pitch: Double, yaw: Double) {
+        let session = WCSession.default
+
+        guard session.activationState == .activated,
+              session.isReachable else {
+            return
+        }
+
+        session.sendMessage([
+            "roll": roll,
+            "pitch": pitch,
+            "yaw": yaw
+        ], replyHandler: nil, errorHandler: nil)
+    }
+
+    func session(
+        _ session: WCSession,
+        activationDidCompleteWith activationState: WCSessionActivationState,
+        error: Error?
+    ) {}
+}
 
 @MainActor
 final class MotionManager: ObservableObject {
@@ -19,12 +55,21 @@ final class MotionManager: ObservableObject {
             guard let motion, error == nil else { return }
 
             Task { @MainActor in
-                self?.roll = motion.attitude.roll * 180 / .pi
-                self?.pitch = motion.attitude.pitch * 180 / .pi
-                self?.yaw = motion.attitude.yaw * 180 / .pi
-                self?.isTracking = true
+                guard let self else { return }
+
+                self.roll = motion.attitude.roll * 180 / .pi
+                self.pitch = motion.attitude.pitch * 180 / .pi
+                self.yaw = motion.attitude.yaw * 180 / .pi
+
+                WatchConnectivityManager.shared.sendMotion(
+                    roll: self.roll,
+                    pitch: self.pitch,
+                    yaw: self.yaw
+                )
             }
         }
+
+        isTracking = true
     }
 
     func stop() {
@@ -43,7 +88,6 @@ struct ContentView: View {
 
             Text(motion.isTracking ? "Tracking" : "Not tracking")
                 .font(.caption)
-                .foregroundStyle(motion.isTracking ? .green : .secondary)
 
             Text("Roll: \(motion.roll, specifier: "%.1f")°")
             Text("Pitch: \(motion.pitch, specifier: "%.1f")°")
