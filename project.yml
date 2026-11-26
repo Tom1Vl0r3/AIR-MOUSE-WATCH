@@ -1,3 +1,4 @@
+
 name: WatchMouse
 
 options:
@@ -6,24 +7,30 @@ options:
     iOS: "17.0"
 
 targets:
-  WatchMouse:
-    type: application
-    platform: watchOS
-    sources:
-      - path: WatchMouse
-    settings:
-      base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.tommy.airmouse.watchmouse
-        SWIFT_VERSION: "5.0"
-        GENERATE_INFOPLIST_FILE: YES
-
   WatchMouseiPhone:
     type: application
     platform: iOS
     sources:
       - path: iPhoneApp
+    dependencies:
+      - target: WatchMouse
+        embed: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tommy.airmouse.iphone
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+
+  WatchMouse:
+    type: application
+    platform: watchOS
+    sources:
+      - path: WatchMouse
+    info:
+      properties:
+        WKCompanionAppBundleIdentifier: com.tommy.airmouse.iphone
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tommy.airmouse.iphone.watchkitapp
         SWIFT_VERSION: "5.0"
         GENERATE_INFOPLIST_FILE: YES
