@@ -1,3 +1,5 @@
+
+import Foundation
 import SwiftUI
 import WatchConnectivity
 
@@ -6,6 +8,11 @@ final class PhoneConnectivity: NSObject, ObservableObject, WCSessionDelegate {
     @Published var pitch = 0.0
     @Published var yaw = 0.0
     @Published var connectionStatus = "Starting..."
+
+    private var lastRoll: Double?
+    private var lastPitch: Double?
+
+    private let receiverURL = URL(string: "http://172.20.10.3:8765")!
 
     override init() {
         super.init()
@@ -35,11 +42,49 @@ final class PhoneConnectivity: NSObject, ObservableObject, WCSessionDelegate {
         _ session: WCSession,
         didReceiveMessage message: [String: Any]
     ) {
-        DispatchQueue.main.async {
-            self.roll = message["roll"] as? Double ?? self.roll
-            self.pitch = message["pitch"] as? Double ?? self.pitch
-            self.yaw = message["yaw"] as? Double ?? self.yaw
+        guard
+            let newRoll = message["roll"] as? Double,
+            let newPitch = message["pitch"] as? Double
+        else {
+            return
         }
+
+        let newYaw = message["yaw"] as? Double ?? 0
+
+        if let previousRoll = lastRoll,
+           let previousPitch = lastPitch {
+
+            let dx = Int((newRoll - previousRoll) * 8)
+            let dy = Int((newPitch - previousPitch) * 8)
+
+            if dx != 0 || dy != 0 {
+                sendMovement(x: dx, y: dy)
+            }
+        }
+
+        lastRoll = newRoll
+        lastPitch = newPitch
+
+        DispatchQueue.main.async {
+            self.roll = newRoll
+            self.pitch = newPitch
+            self.yaw = newYaw
+        }
+    }
+
+    private func sendMovement(x: Int, y: Int) {
+        var request = URLRequest(url: receiverURL)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let body: [String: Int] = [
+            "x": x,
+            "y": y
+        ]
+
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+
+        URLSession.shared.dataTask(with: request).resume()
     }
 
     func sessionDidBecomeInactive(_ session: WCSession) {}
